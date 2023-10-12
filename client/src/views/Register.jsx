@@ -14,11 +14,20 @@ const Register = () => {
 
     try {
       // Make an HTTP POST request to the server to register the user
-      await axios.post(`${process.env.REACT_APP_API_URL}/auth/register`, {
-        username: username,
-        email: email,
-        password: password,
-      });
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/auth/register`,
+        {
+          username: username,
+          email: email,
+          password: password,
+        }
+      );
+
+      // Extract the token from the response
+      const token = response.data.token;
+
+      // Store the token in local storage
+      localStorage.setItem('token', token);
 
       // Navigate to the home page upon successful registration
       navigate('/home');
