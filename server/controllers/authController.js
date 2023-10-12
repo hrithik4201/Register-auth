@@ -19,7 +19,16 @@ const signup = async (req, res) => {
     const user = new User({ username, email, password: hashedPassword });
     await user.save();
 
-    res.status(201).json({ message: 'User created successfully' });
+    // Generate a token
+    const token = jwt.sign(
+      { email: user.email, username: user.username },
+      process.env.SECRET_KEY,
+      {
+        expiresIn: '1h',
+      }
+    );
+
+    res.status(201).json({ token, message: 'User created successfully' });
   } catch (error) {
     console.error('Error creating user:', error);
     res.status(500).json({ message: 'Internal Server Error' });
@@ -35,6 +44,7 @@ const login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
+    // Generate a token for successful login
     const token = jwt.sign(
       { email: user.email, username: user.username },
       process.env.SECRET_KEY,
@@ -42,6 +52,7 @@ const login = async (req, res) => {
         expiresIn: '1h',
       }
     );
+
     res.json({ token });
   } catch (error) {
     console.error('Error logging in:', error);
